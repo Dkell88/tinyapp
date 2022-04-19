@@ -5,6 +5,8 @@ const PORT = 8080;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+const morgan = require("morgan");
+app.use(morgan('dev'));
 
 const gererateRandomString = function() {
   let result = '';
