@@ -35,14 +35,18 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/:shortURl", (req, res) => {
   const templateVars = { shortURL: req.params.shortURl, longURL: urlDatabase[req.params.shortURl] };
+  console.log("Inside /urls/:shortURL", templateVars);
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  urlDatabase[gererateRandomString()] = req.body.longURL;
-  console.log(urlDatabase);
-  res.send("OK");
+  console.log(`URL submitted in form: ${req.body}`);
+  const randomChars = gererateRandomString();
+
+  urlDatabase[randomChars] = req.body.longURL;
+  console.log("New URL Database after adding submitted URL:", urlDatabase);
+  //res.send("OK");
+  res.redirect(`/urls/${randomChars}`);
 });
 
 
