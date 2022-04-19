@@ -7,6 +7,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 const morgan = require("morgan");
 app.use(morgan('dev'));
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 const gererateRandomString = function() {
   let result = '';
@@ -27,16 +29,26 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/new", (req,res) => {
-  res.render("urls_new");
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/:shortURl", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURl, longURL: urlDatabase[req.params.shortURl] };
+  const templateVars = {
+    username: req.cookies["username"],
+    shortURL: req.params.shortURl,
+    longURL: urlDatabase[req.params.shortURl]
+  };
   console.log("(40) The short URL in url/:shortURl; ", req.params.shortURl);
   console.log("(41) These are the temp vars in url/:shortURl; ", templateVars);
   res.render("urls_show", templateVars);
@@ -71,6 +83,17 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${randomChars}`);
 });
   
+app.post("/login", (req, res) => {
+  console.log("The short Url created is: ", req.body.username);
+  res.cookie('username', req.body.username);
+  res.redirect(`/urls`);
+});
+
+app.post("/logout", (req, res) => {
+  console.log("Logout button pressed");
+  res.clearCookie('username');
+  res.redirect(`/urls`);
+});
 
 
 app.listen(PORT, () => {
