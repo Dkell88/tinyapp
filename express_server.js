@@ -37,18 +37,9 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/:shortURl", (req, res) => {
   const templateVars = { shortURL: req.params.shortURl, longURL: urlDatabase[req.params.shortURl] };
+  console.log("(40) The short URL in url/:shortURl; ", req.params.shortURl);
+  console.log("(41) These are the temp vars in url/:shortURl; ", templateVars);
   res.render("urls_show", templateVars);
-});
-
-app.post("/urls", (req, res) => {
-  const randomChars = gererateRandomString();
-  urlDatabase[randomChars] = req.body.longURL;
-  res.redirect(`/urls/${randomChars}`);
-});
-
-app.post("/urls/:shortURl/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURl];
-  res.redirect('/urls');
 });
 
 app.get("/u/:shortURl", (req ,res) => {
@@ -56,7 +47,30 @@ app.get("/u/:shortURl", (req ,res) => {
   res.redirect(longURL);
 });
 
+app.post("/urls/:shortURl/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURl];
+  res.redirect('/urls');
+});
 
+app.post("/urls/:shortURl/editButton", (req, res) => {
+  console.log("(56) The short url for edit button post is:",req.params.shortURl);
+  res.redirect(`/urls/${req.params.shortURl}`);
+});
+
+app.post("/urls/:shortURl/edit", (req, res) => {
+  console.log("(61) The short url for edit post is:",req.params.shortURl);
+  console.log("(61) The new long url for edit post is:",req.body.newLongURL);
+  urlDatabase[req.params.shortURl] = req.body.newLongURL;
+  res.redirect('/urls');
+});
+
+app.post("/urls", (req, res) => {
+  const randomChars = gererateRandomString();
+  urlDatabase[randomChars] = req.body.longURL;
+  console.log("The short Url created is: ", randomChars);
+  res.redirect(`/urls/${randomChars}`);
+});
+  
 
 
 app.listen(PORT, () => {
