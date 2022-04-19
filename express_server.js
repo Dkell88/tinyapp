@@ -35,26 +35,25 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/:shortURl", (req, res) => {
   const templateVars = { shortURL: req.params.shortURl, longURL: urlDatabase[req.params.shortURl] };
-  console.log("Inside /urls/:shortURL", templateVars);
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  console.log(`URL submitted in form: ${req.body}`);
   const randomChars = gererateRandomString();
-
   urlDatabase[randomChars] = req.body.longURL;
-  console.log("New URL Database after adding submitted URL:", urlDatabase);
-  //res.send("OK");
   res.redirect(`/urls/${randomChars}`);
 });
 
+app.get("/u/:shortURl", (req ,res) => {
+  const longURL = urlDatabase[req.params.shortURl];
+  res.redirect(longURL);
+});
 
 
 
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`);
+  console.log(`Listening on port ${PORT}`);
 });
 
 
