@@ -54,9 +54,9 @@ const gererateRandomString = function(length, alphaNum) {
   return result;
 };
 
-const checkEmails = function(email) {
-  for (const user in users) {
-    if (users[user].email === email) {
+const checkEmails = function(email, database) {
+  for (const user in database) {
+    if (database[user].email === email) {
       return user;
     }
   }
@@ -111,10 +111,11 @@ app.get("/urls/new", (req,res) => {
   const templateVars = {
     //id: req.cookies.user_id ,
     //"user": users[req.cookies.user_id],
-    id: req.session.userIdCookie ,
+    //id: req.session.userIdCookie ,
     "user": users[req.session.userIdCookie],
   };
-  if (req.cookies["user_id"]) {
+  //if (req.cookies["user_id"]) {
+  if (req.session.userIdCookie) {
     res.render("urls_new", templateVars);
   } else res.redirect("/login");
 });
@@ -124,7 +125,7 @@ app.get("/urls/:shortURl", (req, res) => {
   const templateVars = {
     //id: req.cookies.user_id ,
     //"user": users[req.cookies.user_id],
-    id: req.session.userIdCookie ,
+    //id: req.session.userIdCookie ,
     "user": users[req.session.userIdCookie],
     shortURL: req.params.shortURl,
     longURL: urlDatabase[req.params.shortURl].longURL
@@ -136,7 +137,7 @@ app.get("/register", (req, res) => {
   const templateVars = {
     //id: req.cookies.user_id ,
     //"user": users[req.cookies.user_id],
-    id: req.session.userIdCookie ,
+    //id: req.session.userIdCookie ,
     "user": users[req.session.userIdCookie],
   };
   res.render("urls_register", templateVars);
@@ -146,7 +147,7 @@ app.get("/login", (req, res) => {
   const templateVars = {
     //id: req.cookies.user_id,
     //"user": users[req.cookies.user_id],
-    id: req.session.userIdCookie,
+    //id: req.session.userIdCookie,
     "user": users[req.session.userIdCookie],
   };
   res.render("urls_login", templateVars);
@@ -190,7 +191,7 @@ app.post("/urls_new", (req, res) => {
 });
   
 app.post("/login", (req, res) => {
-  const user = checkEmails(req.body.email);
+  const user = checkEmails(req.body.email, users);
   if (user === false) {
     return res.status(403).send("<html><h3>403 error, Email not found</h3></html>");
   } if (!bcrypt.compareSync(req.body.password, users[user].password)) {
@@ -214,7 +215,7 @@ app.post("/register", (req, res) => {
   if (!req.body.email || !req.body.password) {
     return res.status(400).send("<html><h3>400 error, missing field</h3></html>");
   }
-  if (checkEmails(req.body.email) !== false) {
+  if (checkEmails(req.body.email, users) !== false) {
     return res.status(400).send("<html><h3>400 error, email already exists</h3></html>");
   }
   const randomChars = gererateRandomString(4, false);
