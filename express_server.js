@@ -135,11 +135,7 @@ app.delete("/urls/:shortURl", (req, res) => {
   res.redirect('/urls');
 });
 
-app.post("/urls/:shortURl/editButton", (req, res) => {
-  res.redirect(`/urls/${req.params.shortURl}`);
-});
-
-app.post("/urls/:shortURl/edit", (req, res) => {
+app.put("/urls/:shortURl", (req, res) => {
 
   //if (urlDatabase[req.params.shortURl].userID === req.cookies.user_id) {
   if (urlDatabase[req.params.shortURl].userID === req.session.userIdCookie) {
@@ -205,3 +201,8 @@ app.listen(PORT, () => {
 });
 
 //<!--<% if(user.id === urls[url].userID) { %> -->
+
+//IS THIS NEEDED?***********
+// app.post("/urls/:shortURl/editButton", (req, res) => {
+//   res.redirect(`/urls/${req.params.shortURl}`);
+// });
