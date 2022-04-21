@@ -137,7 +137,12 @@ app.get("/u/:shortURl", (req ,res) => {
 });
 
 app.post("/urls/:shortURl/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURl];
+  console.log("Delete url, user: ", req.cookies.user_id);
+  console.log("Delete url, user permitted: ", urlDatabase[req.params.shortURl].userID);
+  if (urlDatabase[req.params.shortURl].userID === req.cookies.user_id) {
+    console.log("Delete url, " + req.cookies.user_id + "can delete the file");
+    delete urlDatabase[req.params.shortURl];
+  }
   res.redirect('/urls');
 });
 
@@ -146,7 +151,12 @@ app.post("/urls/:shortURl/editButton", (req, res) => {
 });
 
 app.post("/urls/:shortURl/edit", (req, res) => {
-  urlDatabase[req.params.shortURl].longURL = req.body.newLongURL;
+  console.log("Edit url, user: ", req.cookies.user_id);
+  console.log("Edit url, user permitted: ", urlDatabase[req.params.shortURl].userID);
+  if (urlDatabase[req.params.shortURl].userID === req.cookies.user_id) {
+    console.log("Edit url, Yes " + req.cookies.user_id + " can edit");
+    urlDatabase[req.params.shortURl].longURL = req.body.newLongURL;
+  }
   res.redirect('/urls');
 });
 
