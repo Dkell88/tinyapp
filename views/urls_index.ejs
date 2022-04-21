@@ -36,7 +36,8 @@
                       <form method="POST" action="/urls/<%= url %>/editButton" >
                       <button type="submit" class="btn btn-outline-primary">Edit</button></form></td>
                     <td>
-                      <form method="POST" action="/urls/<%= url %>/delete">
+                      <form method="POST" action="/urls/<%= url %>?_method=DELETE">
+                        <input type="hidden" name="_method" value="DELETE">
                       <button type="submit" class="btn btn-outline-danger">Delete</button></form></td>
               </tr>
             <% } %>
@@ -59,7 +60,7 @@
             <% } %>
           </tbody>
         </table>
-        
+
     <% } %>
   </main>
   <!-- Bootstrap JS -->

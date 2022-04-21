@@ -7,10 +7,13 @@ const bcrypt = require('bcryptjs');
 const morgan = require("morgan");
 //const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
+const { gererateRandomString, getUserByEmail, urlsForUser } = require("./helpers");
+const methodOverride = require('method-override');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
+app.use(methodOverride('_method'));
 //app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
@@ -38,47 +41,14 @@ const users = {
     email: "user@example.com",
     password: bcrypt.hashSync("123456", 10)
   },
-
+  "gjJ5yh": {
+    id: "gjJ5yh",
+    email: "user@example2.com",
+    password: bcrypt.hashSync("987654", 10)
+  }
 };
 
 
-const gererateRandomString = function(length, alphaNum) {
-  let result = '';
-  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  if (!alphaNum) {
-    chars = chars.slice(52);
-  }
-  for (let i = length; i > 0; --i) {
-    result += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return result;
-};
-
-const checkEmails = function(email, database) {
-  for (const user in database) {
-    if (database[user].email === email) {
-      return user;
-    }
-  }
-  return false;
-};
-
-const urlsForUser = function(id) {
-  let returnedURLs = {
-    authorized: {},
-    unauthorized: {}
-  };
-  console.log("ID: ", id);
-  for (const URL in urlDatabase) {
-    console.log("Id within for loop: ",urlDatabase[URL].userID);
-    if (urlDatabase[URL].userID === id) {
-      returnedURLs.authorized[URL] = urlDatabase[URL];
-    } else returnedURLs.unauthorized[URL] = urlDatabase[URL];
-  }
-  console.log("Returned URLs");
-  console.log(returnedURLs);
-  return returnedURLs;
-};
 
 app.get("/", (req, res) => {
   res.send("Whatup Fam");
@@ -90,7 +60,7 @@ app.get("/urls", (req, res) => {
   //   URLsToTemplate = urlsForUser(users[req.cookies.user_id].id);
   // }
   if (req.session.userIdCookie !== undefined) {
-    URLsToTemplate = urlsForUser(users[req.session.userIdCookie].id);
+    URLsToTemplate = urlsForUser(users[req.session.userIdCookie].id, urlDatabase);
   }
   for (const url in URLsToTemplate.authorized) {
     console.log(url);
@@ -158,8 +128,7 @@ app.get("/u/:shortURl", (req ,res) => {
   res.redirect(longURL);
 });
 
-app.post("/urls/:shortURl/delete", (req, res) => {
-  //if (urlDatabase[req.params.shortURl].userID === req.cookies.user_id) {
+app.delete("/urls/:shortURl", (req, res) => {
   if (urlDatabase[req.params.shortURl].userID === req.session.userIdCookie) {
     delete urlDatabase[req.params.shortURl];
   }
@@ -191,7 +160,7 @@ app.post("/urls_new", (req, res) => {
 });
   
 app.post("/login", (req, res) => {
-  const user = checkEmails(req.body.email, users);
+  const user = getUserByEmail(req.body.email, users);
   if (user === false) {
     return res.status(403).send("<html><h3>403 error, Email not found</h3></html>");
   } if (!bcrypt.compareSync(req.body.password, users[user].password)) {
@@ -215,7 +184,7 @@ app.post("/register", (req, res) => {
   if (!req.body.email || !req.body.password) {
     return res.status(400).send("<html><h3>400 error, missing field</h3></html>");
   }
-  if (checkEmails(req.body.email, users) !== false) {
+  if (getUserByEmail(req.body.email, users) !== false) {
     return res.status(400).send("<html><h3>400 error, email already exists</h3></html>");
   }
   const randomChars = gererateRandomString(4, false);
