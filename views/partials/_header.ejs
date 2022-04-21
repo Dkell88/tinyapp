@@ -8,11 +8,15 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <a class="nav-item nav-link" href="/register">Register</a>
+        <% if(!user) { %>
+          <a class="nav-item nav-link" href="/register">Register</a>
+        <% } %>
+        
+
       </div>
     </div>
 
-    <% if(!user_id) { %>
+    <% if(!user) { %>
       <form class="form-inline" action="/login" method="GET">
         <div class="form-group mb-04">
           <button type="submit" class="btn btn-success">Login</button>
@@ -21,7 +25,7 @@
     <% } else {%>
     <form class="form-inline" action="/logout" method="POST">
       <div class="form-group mb-04">
-        <label>Logged in as: <%= user_id %> </label>
+        <label>Logged in as: <%= user.email %> </label>
         <button type="submit" class="btn btn-success">Logout</button>
       </div>
     </form></div>
