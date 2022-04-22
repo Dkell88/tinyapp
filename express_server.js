@@ -108,10 +108,10 @@ app.post("/login", (req, res) => {
   const user = getUserByEmail(req.body.email, users);
   //If the getUserByEmail returns false then the email isn't registered
   if (user === false) {
-    return res.status(403).send("<html><h3>403 uthentication error, please check email and password were entered corretly*</h3></html>");
+    return res.status(403).send("<html><h3>403 uthentication error, please check email and password were entered correctly*</h3></html>");
   //Password is incorrect
   } if (!bcrypt.compareSync(req.body.password, users[user].password)) {
-    return res.status(403).send("<html><h3>403 error, authentication error, please check email and password were entered corretly</h3></html>");
+    return res.status(403).send("<html><h3>403 error, authentication error, please check email and password were entered correctly</h3></html>");
   }
   //Password is correct
   if (bcrypt.compareSync(req.body.password, users[user].password)) {
