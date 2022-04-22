@@ -20,14 +20,14 @@
         <div class="form-group mb-04">
           <button type="submit" class="btn btn-primary">Login</button>
         </div>
-      </form></div>
+      </form>
     <% } else {%>
-    <form class="form-inline" action="/logout" method="POST">
-      <div class="form-group mb-04">
-        <label class = "mr-5">Logged in as: <%= user.email %> </label>
-        <button type="submit" class="btn btn-dark ">Logout</button>
-      </div>
-    </form></div>
+      <form class="form-inline" action="/logout" method="POST">
+        <div class="form-group mb-04">
+          <label class = "mr-5">Logged in as: <%= user.email %> </label>
+          <button type="submit" class="btn btn-dark ">Logout</button>
+        </div>
+      </form>
     <% }%>
   </nav>
 </header>
