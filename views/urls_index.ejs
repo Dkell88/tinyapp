@@ -3,21 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+  <script src="https://kit.fontawesome.com/38c94cacdb.js" crossorigin="anonymous"></script>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
+
 <body>
   <%- include('partials/_header') %>
-  <main style="margin: 1em;">
+  <main style="margin: 2em;">
 
     <% if(user === undefined) { %> 
-      <h3>Welcome to TinyApp, where we got tiny URLs</h3>
-      <p>to continue please <a href="login">login</a> or <a href="register">register</a></p>
 
+        <h1 class = "text-center mb-3 display-3">Welcome to TinyApp</h1>
+        <h2 class = "text-center mb-3">Where we got tiny URLs</h1>
+        <div class="pb-05 text-center "><p class = "pt-04">To continue please</p></div>
+  
+      <div class = "container">
+        <div class="row row-cols-2 mt-5">
+          <div class="col-md-4 text-right"><a class = "lead" href="/login">Login</a></div>
+          <div class="col-md-4 text-center"><p>OR</p></div>
+          <div class="col-md-4 text-left"><a class = "lead" href="/register">Register</a></div>
+        </div>
+      </div>
+
+    <div class="container">
     <% } else { %>
-      <h3>My URLs</h3>
+      <h1 class = "display-6">My URLs</h1>
       <table class="table">
         <thead>
           <tr>
@@ -43,7 +55,7 @@
             <% } %>
           </tbody>
         </table>
-        <h3>URLs Created by others</h3>
+        <h1 class = "display-6">URLs Created by others</h1>
         <table class="table">
           <thead>
             <tr>
@@ -60,9 +72,9 @@
             <% } %>
           </tbody>
         </table>
-
     <% } %>
   </main>
+
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
