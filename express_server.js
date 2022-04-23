@@ -19,33 +19,7 @@ app.use(cookieSession({
 }));
 
 //-------------------- Define "Database" values --------------------//
-const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "aJ481W"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "aJ481W"
-  },
-  "8TmxF4": {
-    longURL: "http://www.facebook.com",
-    userID: "s5hhdg"
-  }
-};
-
-const users = {
-  "aJ481W": {
-    id: "aJ481W",
-    email: "user@example.com",
-    password: bcrypt.hashSync("123456", 10)
-  },
-  "gjJ5yh": {
-    id: "gjJ5yh",
-    email: "user@example2.com",
-    password: bcrypt.hashSync("987654", 10)
-  }
-};
+const  { urlDatabase, users } = require('./data/databases');
 
 //-------------------- GET Method Calls --------------------//
 app.get("/urls", (req, res) => {
@@ -72,11 +46,17 @@ app.get("/urls/new", (req,res) => {
 });
 
 app.get("/urls/:shortURl", (req, res) => {
+  if (!urlDatabase[req.params.shortURl]) {
+    return res.status(400).send("<html><h3>No url present</h3></html>");
+  }
   const templateVars = {
     user: users[req.session.userIdCookie],
     shortURL: req.params.shortURl,
     longURL: urlDatabase[req.params.shortURl].longURL
   };
+  if (urlDatabase[req.params.shortURl].userID !== req.session.userIdCookie) {
+    return res.status(401).send("<html><h3>401 unauthorized</h3></html>");
+  }
   res.render("urls_show", templateVars);
 });
 
@@ -94,8 +74,23 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 });
 
+app.get("/u/:shortURl", (req ,res) => {
+  if (!urlDatabase[req.params.shortURl]) {
+    return res.status(400).send("<html><h3>No url present</h3></html>");
+  }
+  const longURL = urlDatabase[req.params.shortURl].longURL;
+  res.redirect(longURL);
+});
+
+app.get("/", (req ,res) => {
+  res.redirect("/urls");
+});
+
 //-------------------- POST Method Calls --------------------//
 app.post("/urls_new", (req, res) => {
+  if (!req.session.userIdCookie) {
+    return res.status(403).send("<html><h3>403 Authentication error, please login</h3></html>");
+  }
   const randomChars = gererateRandomString(6, true);
   urlDatabase[randomChars] = {
     longURL: req.body.longURL,
@@ -108,7 +103,7 @@ app.post("/login", (req, res) => {
   const user = getUserByEmail(req.body.email, users);
   //If the getUserByEmail returns false then the email isn't registered
   if (user === false) {
-    return res.status(403).send("<html><h3>403 uthentication error, please check email and password were entered correctly*</h3></html>");
+    return res.status(403).send("<html><h3>403 Authentication error, please check email and password were entered correctly*</h3></html>");
   //Password is incorrect
   } if (!bcrypt.compareSync(req.body.password, users[user].password)) {
     return res.status(403).send("<html><h3>403 error, authentication error, please check email and password were entered correctly</h3></html>");
@@ -126,12 +121,13 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  const { email, password } = req.body;
   //Was the password and email feild filled?
   if (!req.body.email || !req.body.password) {
     return res.status(400).send("<html><h3>400 error, missing field</h3></html>");
   }
   //Check to see if the email already exists
-  if (getUserByEmail(req.body.email, users) !== false) {
+  if (getUserByEmail(req.body.email, users)) {
     return res.status(400).send("<html><h3>400 error, email already exists</h3></html>");
   }
   const randomChars = gererateRandomString(6, true);
@@ -146,6 +142,9 @@ app.post("/register", (req, res) => {
 
 //-------------------- PUT Method Calls --------------------//
 app.put("/urls/:shortURl", (req, res) => {
+  if (!req.session.userIdCookie) {
+    return res.status(403).send("<html><h3>403 Authentication error, please login</h3></html>");
+  }
   if (urlDatabase[req.params.shortURl].userID === req.session.userIdCookie) {
     urlDatabase[req.params.shortURl].longURL = req.body.newLongURL;
   }
@@ -153,6 +152,9 @@ app.put("/urls/:shortURl", (req, res) => {
 });
 //-------------------- DELETE Method Calls --------------------//
 app.delete("/urls/:shortURl", (req, res) => {
+  if (!req.session.userIdCookie) {
+    return res.status(403).send("<html><h3>403 Authentication error, please login</h3></html>");
+  }
   if (urlDatabase[req.params.shortURl].userID === req.session.userIdCookie) {
     delete urlDatabase[req.params.shortURl];
   }
